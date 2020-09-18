@@ -965,6 +965,9 @@ namespace pugi
 		// Callback that is called for each node traversed
 		virtual bool for_each(xml_node& node) = 0;
 
+		// to call when we are getting back from element checkef in for_each
+		virtual bool on_leave(xml_node& node) { return true ;}
+
 		// Callback that is called when traversal ends
 		virtual bool end(xml_node& node);
 	};

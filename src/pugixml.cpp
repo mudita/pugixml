@@ -6294,29 +6294,46 @@ namespace pugi
 
 			do
 			{
-				xml_node arg_for_each(cur);
-				if (!walker.for_each(arg_for_each))
-					return false;
+                xml_node arg_for_each(cur);
+                if (!walker.for_each(arg_for_each)) {
+                    return false;
+                }
 
-				if (cur->first_child)
+                if (cur->first_child)
 				{
 					++walker._depth;
 					cur = cur->first_child;
 				}
-				else if (cur->next_sibling)
-					cur = cur->next_sibling;
+				else if (cur->next_sibling) {
+                    xml_node arg_for_leave(cur);
+                    if (!walker.on_leave(arg_for_leave)) 
+                    {
+                        return false;
+                    }
+                    cur = cur->next_sibling;
+                }
 				else
 				{
 					while (!cur->next_sibling && cur != _root && cur->parent)
 					{
+                        xml_node arg_for_leave(cur);
+                        if (!walker.on_leave(arg_for_leave)) 
+                        {
+                            return false;
+                        }
 						--walker._depth;
 						cur = cur->parent;
 					}
 
-					if (cur != _root)
-						cur = cur->next_sibling;
-				}
-			}
+                    if (cur != _root) {
+                        xml_node arg_for_leave(cur);
+                        if (!walker.on_leave(arg_for_leave)) {
+                            return false;
+                        }
+                        cur = cur->next_sibling;
+                    }
+                }
+            }
 			while (cur && cur != _root);
 		}
 
